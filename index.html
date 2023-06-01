@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphing</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<canvas id="myChart" width="250" height="100"></canvas>
+<script>
+
+graphing();
+
+
+async function graphing() {
+    const fetchdata = await Data();
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const cfg = {
+        type: 'line',
+        data: {
+        labels: fetchdata.xlabel,
+        datasets: [{
+        label: 'Annual Mean Temperature of India',
+        data: fetchdata.ytemp,
+        fill: false,
+        borderColor: 'grey',
+    }]
+    }
+    }
+    const myChart = new Chart(ctx, cfg);
+    
+}
+
+
+ async function Data() {
+    const xlabel = [];
+    const ytemp = [];
+    try{
+    const response = await fetch('Mean_Temp_IMD_2017.csv');
+    const dataText = await response.text();
+    const rows = dataText.split("\n").splice(1);
+    rows.forEach(item => {
+        const column = item.split(",")
+        const year = column[0];
+        xlabel.push(year)
+        const annualTemp = column[13];
+        ytemp.push(annualTemp);
+    })
+   
+    }
+    catch(e) {
+        console.log(e);
+    }
+    return {xlabel, ytemp}
+}
+
+</script>
+<footer>
+    <p>&copy; Renny Harlin 2023</p>
+</footer>
+</body>
+</html>
